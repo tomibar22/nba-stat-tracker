@@ -1,20 +1,20 @@
-'use client';
-import { useState } from 'react';
-import { Plus, Minus, RotateCcw, X } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Alert } from '@/components/ui/alert';
+"use client";
+import React, { useState } from 'react';
+import { Plus, RotateCcw, X } from 'lucide-react';
 
 const StatButton = ({ label, value, onClick }) => (
-  <Button 
+  <button 
     onClick={onClick}
-    className="h-8 px-2 text-xs"
-    variant="outline"
+    className="h-8 px-2 text-xs bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 
+               rounded-md transition-all duration-200 hover:scale-105
+               flex items-center justify-between w-full"
   >
-    {label}: {value}
-    <Plus size={12} className="ml-1" />
-  </Button>
+    <span className="text-zinc-400">{label}</span>
+    <div className="flex items-center">
+      <span className="text-zinc-100 mr-1">{value}</span>
+      <Plus size={12} className="text-zinc-400" />
+    </div>
+  </button>
 );
 
 const PlayerCard = ({ player, onUpdateStats, onDelete }) => {
@@ -40,21 +40,25 @@ const PlayerCard = ({ player, onUpdateStats, onDelete }) => {
   };
 
   return (
-    <Card className="mb-2">
-      <CardContent className="p-3">
+    <div className="mb-2 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 
+                    rounded-lg transition-all duration-200">
+      <div className="p-3">
         <div className="flex justify-between items-center mb-2">
-          <div className="flex items-center gap-2">
-            <h3 className="font-bold">{player.name}</h3>
-            <span className="text-sm font-medium">PTS: {stats.points}</span>
+          <div className="flex items-center gap-3">
+            <h3 className="font-bold text-zinc-100">{player.name}</h3>
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-zinc-400">PTS</span>
+              <span className="text-sm font-medium text-zinc-100">{stats.points}</span>
+            </div>
           </div>
-          <Button 
-            variant="ghost" 
-            size="icon"
-            className="h-6 w-6"
+          <button 
+            className="h-6 w-6 flex items-center justify-center rounded-md
+                       hover:bg-zinc-800 text-zinc-400 hover:text-zinc-100
+                       transition-colors duration-200"
             onClick={() => onDelete(player.id)}
           >
             <X size={12} />
-          </Button>
+          </button>
         </div>
 
         <div className="grid grid-cols-3 gap-1 mb-2">
@@ -91,18 +95,20 @@ const PlayerCard = ({ player, onUpdateStats, onDelete }) => {
         </div>
 
         {!showManualInput ? (
-          <Button 
-            variant="outline" 
-            size="sm"
-            className="w-full h-6 text-xs"
+          <button 
+            className="w-full h-6 text-xs bg-zinc-800 hover:bg-zinc-700 
+                       border border-zinc-700 hover:border-zinc-600 text-zinc-400
+                       hover:text-zinc-100 transition-all duration-200 rounded-md"
             onClick={() => setShowManualInput(true)}
           >
             Fix
-          </Button>
+          </button>
         ) : (
           <div className="flex gap-1">
             <select 
-              className="flex-1 h-6 text-xs border rounded px-1"
+              className="flex-1 h-6 text-xs border rounded px-1 bg-zinc-800 
+                         border-zinc-700 text-zinc-100 focus:border-zinc-600
+                         transition-all duration-200"
               value={manualStat.type}
               onChange={(e) => setManualStat({ ...manualStat, type: e.target.value })}
             >
@@ -114,29 +120,32 @@ const PlayerCard = ({ player, onUpdateStats, onDelete }) => {
               <option value="rebounds">REB</option>
               <option value="blocks">BLK</option>
             </select>
-            <Input
+            <input
               type="number"
-              className="w-16 h-6 text-xs"
+              className="w-16 h-6 text-xs bg-zinc-800 border-zinc-700 
+                         text-zinc-100 focus:border-zinc-600 rounded-md px-1
+                         border transition-all duration-200"
               value={manualStat.value}
               onChange={(e) => setManualStat({ ...manualStat, value: e.target.value })}
             />
-            <Button 
-              className="h-6 text-xs px-2"
+            <button 
+              className="h-6 text-xs px-2 bg-zinc-800 hover:bg-zinc-700
+                         transition-all duration-200 rounded-md text-zinc-100"
               onClick={handleManualUpdate}
             >
               Set
-            </Button>
-            <Button 
-              variant="ghost"
-              className="h-6 w-6 p-0"
+            </button>
+            <button 
+              className="h-6 w-6 p-0 text-zinc-400 hover:text-zinc-100
+                         transition-colors duration-200 flex items-center justify-center"
               onClick={() => setShowManualInput(false)}
             >
               <X size={12} />
-            </Button>
+            </button>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
@@ -188,45 +197,52 @@ const App = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-2">
-      <div className="flex gap-1 mb-2">
-        <Input
-          placeholder="Player name"
-          className="h-8 text-sm"
-          value={newPlayerName}
-          onChange={(e) => setNewPlayerName(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && addPlayer()}
-        />
-        <Button 
-          className="h-8"
-          onClick={addPlayer}
-        >
-          Add
-        </Button>
-        <Button 
-          variant="destructive"
-          className="h-8"
-          onClick={resetGame}
-        >
-          <RotateCcw size={14} />
-        </Button>
-      </div>
-
-      {players.length === 0 && (
-        <Alert className="mb-2 py-2 text-sm">
-          Add players to start tracking stats!
-        </Alert>
-      )}
-
-      <div className="space-y-2">
-        {players.map(player => (
-          <PlayerCard
-            key={player.id}
-            player={player}
-            onUpdateStats={updatePlayerStats}
-            onDelete={deletePlayer}
+    <div className="min-h-screen bg-black text-zinc-100">
+      <div className="max-w-xl mx-auto p-2">
+        <div className="flex gap-1 mb-2">
+          <input
+            placeholder="Player name"
+            className="h-8 text-sm bg-zinc-900 border-zinc-800 text-zinc-100
+                      focus:border-zinc-700 rounded-md px-2 flex-1
+                      transition-all duration-200"
+            value={newPlayerName}
+            onChange={(e) => setNewPlayerName(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && addPlayer()}
           />
-        ))}
+          <button 
+            className="h-8 px-3 bg-zinc-800 hover:bg-zinc-700 transition-all duration-200
+                       rounded-md text-zinc-100"
+            onClick={addPlayer}
+          >
+            Add
+          </button>
+          <button 
+            className="h-8 w-8 bg-red-900 hover:bg-red-800 transition-all duration-200
+                       rounded-md text-zinc-100 flex items-center justify-center
+                       hover:scale-105"
+            onClick={resetGame}
+          >
+            <RotateCcw size={14} />
+          </button>
+        </div>
+
+        {players.length === 0 && (
+          <div className="mb-2 py-2 text-sm bg-zinc-900 border border-zinc-800 
+                         text-zinc-400 rounded-lg px-3">
+            Add players to start tracking stats!
+          </div>
+        )}
+
+        <div className="space-y-2">
+          {players.map(player => (
+            <PlayerCard
+              key={player.id}
+              player={player}
+              onUpdateStats={updatePlayerStats}
+              onDelete={deletePlayer}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
