@@ -2,6 +2,55 @@
 import React, { useState } from 'react';
 import { Plus, RotateCcw, X } from 'lucide-react';
 
+const ManualStatUpdate = ({ onUpdateStats }) => {
+  const [manualStat, setManualStat] = useState({ type: '', value: 0 });
+
+  const handleManualUpdate = () => {
+    if (manualStat.type && manualStat.value) {
+      onUpdateStats(manualStat.type, parseInt(manualStat.value));
+      setManualStat({ type: '', value: 0 });
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex gap-2">
+        <select 
+          className="flex-1 h-12 text-base border rounded px-3 bg-zinc-800 
+                     border-zinc-700 text-zinc-100 focus:border-zinc-600
+                     transition-all duration-200"
+          value={manualStat.type}
+          onChange={(e) => setManualStat({ ...manualStat, type: e.target.value })}
+        >
+          <option value="">Select Stat</option>
+          <option value="points1">1 Point</option>
+          <option value="points2">2 Points</option>
+          <option value="points3">3 Points</option>
+          <option value="assists">Assists</option>
+          <option value="rebounds">Rebounds</option>
+          <option value="blocks">Blocks</option>
+        </select>
+        <input
+          type="number"
+          className="w-24 h-12 text-base bg-zinc-800 border-zinc-700 
+                     text-zinc-100 focus:border-zinc-600 rounded-md px-3
+                     border transition-all duration-200"
+          value={manualStat.value}
+          onChange={(e) => setManualStat({ ...manualStat, value: e.target.value })}
+        />
+      </div>
+      <button 
+        className="w-full h-12 bg-zinc-800 hover:bg-zinc-700
+                   transition-all duration-200 rounded-md text-zinc-100
+                   font-medium text-base"
+        onClick={handleManualUpdate}
+      >
+        Update Stats
+      </button>
+    </div>
+  );
+};
+
 const StatButton = ({ label, value, onClick }) => (
   <button 
     onClick={onClick}
@@ -83,37 +132,41 @@ const PlayerCard = ({ player, onUpdateStats, onDelete }) => {
       </div>
 
       {isMenuOpen && (
-        <div className="mt-2 grid grid-cols-2 gap-2 p-3 bg-zinc-900 border border-zinc-800 rounded-lg">
-          <StatButton 
-            label="1 POINT" 
-            value={stats.points1}
-            onClick={() => handleStatClick('points1')} 
-          />
-          <StatButton 
-            label="2 POINTS" 
-            value={stats.points2}
-            onClick={() => handleStatClick('points2')} 
-          />
-          <StatButton 
-            label="3 POINTS" 
-            value={stats.points3}
-            onClick={() => handleStatClick('points3')} 
-          />
-          <StatButton 
-            label="ASSISTS" 
-            value={stats.assists}
-            onClick={() => handleStatClick('assists')} 
-          />
-          <StatButton 
-            label="REBOUNDS" 
-            value={stats.rebounds}
-            onClick={() => handleStatClick('rebounds')} 
-          />
-          <StatButton 
-            label="BLOCKS" 
-            value={stats.blocks}
-            onClick={() => handleStatClick('blocks')} 
-          />
+        <div className="mt-2 p-3 bg-zinc-900 border border-zinc-800 rounded-lg space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            <StatButton 
+              label="1 POINT" 
+              value={stats.points1}
+              onClick={() => handleStatClick('points1')} 
+            />
+            <StatButton 
+              label="2 POINTS" 
+              value={stats.points2}
+              onClick={() => handleStatClick('points2')} 
+            />
+            <StatButton 
+              label="3 POINTS" 
+              value={stats.points3}
+              onClick={() => handleStatClick('points3')} 
+            />
+            <StatButton 
+              label="ASSISTS" 
+              value={stats.assists}
+              onClick={() => handleStatClick('assists')} 
+            />
+            <StatButton 
+              label="REBOUNDS" 
+              value={stats.rebounds}
+              onClick={() => handleStatClick('rebounds')} 
+            />
+            <StatButton 
+              label="BLOCKS" 
+              value={stats.blocks}
+              onClick={() => handleStatClick('blocks')} 
+            />
+          </div>
+          
+          <ManualStatUpdate onUpdateStats={(type, value) => onUpdateStats(player.id, type, value)} />
         </div>
       )}
     </div>
